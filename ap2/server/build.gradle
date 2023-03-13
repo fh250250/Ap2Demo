@@ -1,0 +1,20 @@
+plugins {
+    id 'java-library'
+    id 'io.freefair.lombok' version '6.6'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation project(':ap2:lib')
+
+    implementation 'io.netty:netty-all:4.1.86.Final'
+    implementation 'org.slf4j:slf4j-api:2.0.5'
+
+    implementation 'net.i2p.crypto:eddsa:0.3.0'
+    implementation 'com.googlecode.plist:dd-plist:1.26'
+    implementation 'io.lindstrom:m3u8-parser:0.24'
+}
