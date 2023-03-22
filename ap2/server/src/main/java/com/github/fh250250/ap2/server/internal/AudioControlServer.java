@@ -75,10 +75,12 @@ public class AudioControlServer implements Runnable {
     }
 
     private EventLoopGroup eventLoopGroup() {
-        return Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+//        return Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        return new NioEventLoopGroup();
     }
 
     private Class<? extends DatagramChannel> datagramChannelClass() {
-        return Epoll.isAvailable() ? EpollDatagramChannel.class : NioDatagramChannel.class;
+//        return Epoll.isAvailable() ? EpollDatagramChannel.class : NioDatagramChannel.class;
+        return NioDatagramChannel.class;
     }
 }

@@ -3,39 +3,58 @@ package com.github.fh250250.ap2demo
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
-import android.view.SurfaceHolder
 import android.view.SurfaceView
-import java.util.concurrent.LinkedBlockingQueue
 
-class VideoPlayer(private val surfaceView: SurfaceView) : SurfaceHolder.Callback {
+class VideoPlayer(private val surfaceView: SurfaceView) {
     private val TAG = "VideoPlayer"
 
-    private val packetList = LinkedBlockingQueue<ByteArray>()
     private lateinit var codec: MediaCodec
+    private val packetList = mutableListOf<ByteArray>()
+    private val packetLimit = 10
 
-    init {
-        surfaceView.holder.addCallback(this)
+    fun start() {
+        Log.i(TAG, "start")
+        try {
+            initCodec()
+            codec.start()
+        } catch (_: Exception) {
+        }
     }
 
     fun stop() {
-        packetList.clear()
+        Log.i(TAG, "stop")
+        try {
+            codec.stop()
+            codec.release()
+        } catch (_: Exception) {
+        }
     }
 
     fun addPacket(packet: ByteArray) {
+        if (packetList.size >= packetLimit) packetList.removeFirstOrNull()
         packetList.add(packet)
     }
 
-    private fun setupCodec() {
-        val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, surfaceView.width, surfaceView.height)
+    private fun initCodec() {
         codec = MediaCodec.createDecoderByType(MediaFormat.MIMETYPE_VIDEO_AVC)
-        codec.setVideoScalingMode(MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT)
+
         codec.setCallback(object : MediaCodec.Callback() {
             override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
-                val packet = packetList.take()
-                val buffer = codec.getInputBuffer(index)
+                val packet = packetList.removeFirstOrNull()
 
-                buffer?.put(packet)
-                codec.queueInputBuffer(index, 0, packet.size, 0, 0)
+                try {
+                    val buffer = codec.getInputBuffer(index)
+
+                    if (packet != null) {
+                        if (buffer != null) {
+                            buffer.put(packet)
+                            codec.queueInputBuffer(index, 0, packet.size, 0, 0)
+                        }
+                    } else {
+                        codec.queueInputBuffer(index, 0, 0, 0, 0)
+                    }
+                } catch (_: Exception) {
+                }
             }
 
             override fun onOutputBufferAvailable(
@@ -43,7 +62,10 @@ class VideoPlayer(private val surfaceView: SurfaceView) : SurfaceHolder.Callback
                 index: Int,
                 info: MediaCodec.BufferInfo
             ) {
-                codec.releaseOutputBuffer(index, true)
+                try {
+                    codec.releaseOutputBuffer(index, true)
+                } catch (_: Exception) {
+                }
             }
 
             override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
@@ -51,26 +73,17 @@ class VideoPlayer(private val surfaceView: SurfaceView) : SurfaceHolder.Callback
             }
 
             override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
-                Log.i(TAG, "onOutputFormatChanged")
+                val width = format.getInteger(MediaFormat.KEY_WIDTH)
+                val height = format.getInteger(MediaFormat.KEY_HEIGHT)
+                Log.i(TAG, "onOutputFormatChanged size=${width}x${height}")
+                resizeSurfaceView(width, height)
             }
-
         })
+
+        val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, surfaceView.width, surfaceView.height)
         codec.configure(mediaFormat, surfaceView.holder.surface, null, 0)
-        codec.start()
     }
 
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        setupCodec()
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        codec.stop()
-        codec.release()
-        setupCodec()
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        codec.stop()
-        codec.release()
+    private fun resizeSurfaceView(width: Int, height: Int) {
     }
 }

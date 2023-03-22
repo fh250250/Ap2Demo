@@ -90,10 +90,12 @@ public class VideoServer implements Runnable {
     }
 
     private EventLoopGroup eventLoopGroup() {
-        return Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+//        return Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        return new NioEventLoopGroup();
     }
 
     private Class<? extends ServerSocketChannel> serverSocketChannelClass() {
-        return Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
+//        return Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
+        return NioServerSocketChannel.class;
     }
 }
