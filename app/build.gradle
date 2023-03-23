@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.github.fh250250.ap2demo'
+    namespace 'com.example.ap2demo'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.github.fh250250.ap2demo"
+        applicationId "com.example.ap2demo"
         minSdk 24
         targetSdk 33
         versionCode 1

@@ -1,4 +1,4 @@
-package com.github.fh250250.ap2demo
+package com.example.ap2demo
 
 import org.junit.Test
 
