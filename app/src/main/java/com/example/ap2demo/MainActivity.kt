@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsume
 
         infoView = findViewById(R.id.infoView)
         infoView.text = "设备 [${Build.MODEL}] 等待连接"
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onVideoFormat(videoStreamInfo: VideoStreamInfo?) {
@@ -52,11 +55,11 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsume
     }
 
     override fun onAudioFormat(audioStreamInfo: AudioStreamInfo?) {
-        Log.i(TAG, "onAudioFormat")
+        Log.i(TAG, "onAudioFormat $audioStreamInfo")
     }
 
     override fun onAudio(bytes: ByteArray?) {
-        Log.i(TAG, "onAudio")
+//        Log.i(TAG, "onAudio")
     }
 
     override fun onAudioSrcDisconnect() {
