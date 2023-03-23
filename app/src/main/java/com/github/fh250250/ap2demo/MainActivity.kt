@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.View
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.fh250250.ap2.lib.AudioStreamInfo
 import com.github.fh250250.ap2.lib.VideoStreamInfo
@@ -16,7 +19,9 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsumer {
     private val TAG = "ap2demo"
 
+    private lateinit var playerView: RelativeLayout
     private lateinit var surfaceView: SurfaceView
+    private lateinit var infoView: TextView
     private lateinit var airPlayServer: AirPlayServer
     private lateinit var videoPlayer: VideoPlayer
 
@@ -24,11 +29,16 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsume
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        playerView = findViewById(R.id.playerView)
         surfaceView = findViewById(R.id.surfaceView)
         surfaceView.holder.addCallback(this)
+
+        infoView = findViewById(R.id.infoView)
+        infoView.text = "设备 [${Build.MODEL}] 等待连接"
     }
 
     override fun onVideoFormat(videoStreamInfo: VideoStreamInfo?) {
+        runOnUiThread { infoView.visibility = View.GONE }
         videoPlayer.start()
     }
 
@@ -37,6 +47,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsume
     }
 
     override fun onVideoSrcDisconnect() {
+        runOnUiThread { infoView.visibility = View.VISIBLE }
         videoPlayer.stop()
     }
 
@@ -57,17 +68,17 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsume
 
         val airPlayConfig = AirPlayConfig()
         airPlayConfig.serverName = Build.MODEL
-        airPlayConfig.width = surfaceView.width
-        airPlayConfig.height = surfaceView.height
+        airPlayConfig.width = playerView.width
+        airPlayConfig.height = playerView.height
         airPlayConfig.fps = 25
         airPlayServer = AirPlayServer(airPlayConfig, this)
         thread { airPlayServer.start() }
 
-        videoPlayer = VideoPlayer(surfaceView)
+        videoPlayer = VideoPlayer(surfaceView, width = playerView.width, height = playerView.height)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Log.i(TAG, "surfaceChanged")
+        Log.i(TAG, "surfaceChanged size=${width}x${height}")
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {

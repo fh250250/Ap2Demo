@@ -4,8 +4,13 @@ import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
 import android.view.SurfaceView
+import android.view.ViewGroup
 
-class VideoPlayer(private val surfaceView: SurfaceView) {
+class VideoPlayer(
+    private val surfaceView: SurfaceView,
+    private val width: Int,
+    private val height: Int
+    ) {
     private val TAG = "VideoPlayer"
 
     private lateinit var codec: MediaCodec
@@ -73,17 +78,16 @@ class VideoPlayer(private val surfaceView: SurfaceView) {
             }
 
             override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
-                val width = format.getInteger(MediaFormat.KEY_WIDTH)
-                val height = format.getInteger(MediaFormat.KEY_HEIGHT)
-                Log.i(TAG, "onOutputFormatChanged size=${width}x${height}")
-                resizeSurfaceView(width, height)
+                resizeSurfaceView(format.getInteger(MediaFormat.KEY_WIDTH), format.getInteger(MediaFormat.KEY_HEIGHT))
             }
         })
 
-        val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, surfaceView.width, surfaceView.height)
+        val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height)
         codec.configure(mediaFormat, surfaceView.holder.surface, null, 0)
     }
 
     private fun resizeSurfaceView(width: Int, height: Int) {
+        Log.i(TAG, "resizeSurfaceView size=${width}x${height}")
+        surfaceView.holder.setFixedSize(width, height)
     }
 }
