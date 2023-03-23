@@ -5,11 +5,7 @@ import android.media.MediaFormat
 import android.util.Log
 import android.view.SurfaceView
 
-class VideoPlayer(
-    private val surfaceView: SurfaceView,
-    private val width: Int,
-    private val height: Int
-    ) {
+class VideoPlayer(private val surfaceView: SurfaceView) {
     private val TAG = "VideoPlayer"
 
     private lateinit var codec: MediaCodec
@@ -21,8 +17,7 @@ class VideoPlayer(
         try {
             initCodec()
             codec.start()
-        } catch (_: Exception) {
-        }
+        } catch (_: Exception) {}
     }
 
     fun stop() {
@@ -30,8 +25,7 @@ class VideoPlayer(
         try {
             codec.stop()
             codec.release()
-        } catch (_: Exception) {
-        }
+        } catch (_: Exception) {}
     }
 
     fun addPacket(packet: ByteArray) {
@@ -49,27 +43,19 @@ class VideoPlayer(
                 try {
                     val buffer = codec.getInputBuffer(index)
 
-                    if (packet != null) {
-                        if (buffer != null) {
-                            buffer.put(packet)
-                            codec.queueInputBuffer(index, 0, packet.size, 0, 0)
-                        }
+                    if (packet != null && buffer != null) {
+                        buffer.put(packet)
+                        codec.queueInputBuffer(index, 0, packet.size, 0, 0)
                     } else {
                         codec.queueInputBuffer(index, 0, 0, 0, 0)
                     }
-                } catch (_: Exception) {
-                }
+                } catch (_: Exception) {}
             }
 
-            override fun onOutputBufferAvailable(
-                codec: MediaCodec,
-                index: Int,
-                info: MediaCodec.BufferInfo
-            ) {
+            override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
                 try {
                     codec.releaseOutputBuffer(index, true)
-                } catch (_: Exception) {
-                }
+                } catch (_: Exception) {}
             }
 
             override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
@@ -77,16 +63,12 @@ class VideoPlayer(
             }
 
             override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
-                resizeSurfaceView(format.getInteger(MediaFormat.KEY_WIDTH), format.getInteger(MediaFormat.KEY_HEIGHT))
+                Log.i(TAG, "onOutputFormatChanged size=${format.getInteger(MediaFormat.KEY_WIDTH)}x${format.getInteger(MediaFormat.KEY_HEIGHT)}")
+                surfaceView.holder.setFixedSize(format.getInteger(MediaFormat.KEY_WIDTH), format.getInteger(MediaFormat.KEY_HEIGHT))
             }
         })
 
-        val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height)
+        val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, surfaceView.width, surfaceView.height)
         codec.configure(mediaFormat, surfaceView.holder.surface, null, 0)
-    }
-
-    private fun resizeSurfaceView(width: Int, height: Int) {
-        Log.i(TAG, "resizeSurfaceView size=${width}x${height}")
-        surfaceView.holder.setFixedSize(width, height)
     }
 }
