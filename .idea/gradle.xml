@@ -10,9 +10,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/ap2" />
-            <option value="$PROJECT_DIR$/ap2/lib" />
-            <option value="$PROJECT_DIR$/ap2/server" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>

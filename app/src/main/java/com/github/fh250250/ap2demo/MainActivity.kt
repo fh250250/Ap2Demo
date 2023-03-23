@@ -9,11 +9,11 @@ import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.github.fh250250.ap2.lib.AudioStreamInfo
-import com.github.fh250250.ap2.lib.VideoStreamInfo
-import com.github.fh250250.ap2.server.AirPlayConfig
-import com.github.fh250250.ap2.server.AirPlayConsumer
-import com.github.fh250250.ap2.server.AirPlayServer
+import com.github.serezhka.airplay.lib.AudioStreamInfo
+import com.github.serezhka.airplay.lib.VideoStreamInfo
+import com.github.serezhka.airplay.server.AirPlayConfig
+import com.github.serezhka.airplay.server.AirPlayConsumer
+import com.github.serezhka.airplay.server.AirPlayServer
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsumer {
@@ -66,12 +66,15 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsume
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.i(TAG, "surfaceCreated size=${surfaceView.width}x${surfaceView.height}")
 
-        val airPlayConfig = AirPlayConfig()
-        airPlayConfig.serverName = Build.MODEL
-        airPlayConfig.width = playerView.width
-        airPlayConfig.height = playerView.height
-        airPlayConfig.fps = 25
-        airPlayServer = AirPlayServer(airPlayConfig, this)
+        airPlayServer = AirPlayServer(
+            AirPlayConfig().apply {
+                serverName = Build.MODEL
+                width = playerView.width
+                height = playerView.height
+                fps = 25
+            },
+            this
+        )
         thread { airPlayServer.start() }
 
         videoPlayer = VideoPlayer(surfaceView, width = playerView.width, height = playerView.height)

@@ -4,7 +4,6 @@ import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
 import android.view.SurfaceView
-import android.view.ViewGroup
 
 class VideoPlayer(
     private val surfaceView: SurfaceView,

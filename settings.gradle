@@ -18,5 +18,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Ap2Demo"
 include ':app'
-include ':ap2:lib'
-include ':ap2:server'
