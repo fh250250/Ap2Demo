@@ -17,7 +17,7 @@ import com.github.serezhka.airplay.server.AirPlayServer
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsumer {
-    private val TAG = "ap2demo"
+    private val TAG = "MainActivity"
 
     private lateinit var surfaceView: SurfaceView
     private lateinit var infoView: TextView
