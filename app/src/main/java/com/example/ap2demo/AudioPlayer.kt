@@ -39,7 +39,6 @@ class AudioPlayer {
             aacPtr = 0L
         }
         try {
-            audioTrack.flush()
             audioTrack.stop()
             audioTrack.release()
         } catch (_: Exception) {}
