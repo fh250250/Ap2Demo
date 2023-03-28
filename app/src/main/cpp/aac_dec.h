@@ -6,7 +6,7 @@
 #include "aacdecoder_lib.h"
 #include "log.h"
 
-#define PCM_BUF_SIZE 480 * 4
+#define PCM_SIZE 480 * 2
 
 typedef struct {
     HANDLE_AACDECODER handle;

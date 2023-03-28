@@ -20,8 +20,8 @@ Java_com_example_ap2demo_AudioPlayer_aacDecode(JNIEnv *env, jobject thiz, jlong 
     aac_dec_decode((aac_dec_ctx*)ptr, (uint8_t*)in_buf, in_buf_size);
     (*env)->ReleaseByteArrayElements(env, buf, in_buf, 0);
 
-    jshortArray out_buf = (*env)->NewShortArray(env, PCM_BUF_SIZE / 2);
-    (*env)->SetShortArrayRegion(env, out_buf, 0, PCM_BUF_SIZE / 2, ((aac_dec_ctx*)ptr)->pcm_buf);
+    jshortArray out_buf = (*env)->NewShortArray(env, PCM_SIZE);
+    (*env)->SetShortArrayRegion(env, out_buf, 0, PCM_SIZE, ((aac_dec_ctx*)ptr)->pcm_buf);
 
     return out_buf;
 }

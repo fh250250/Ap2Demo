@@ -7,7 +7,7 @@ aac_dec_ctx* aac_dec_open() {
         return NULL;
     }
 
-    ctx->pcm_buf = malloc(PCM_BUF_SIZE);
+    ctx->pcm_buf = malloc(sizeof(INT_PCM) * PCM_SIZE);
     if (!ctx->pcm_buf) {
         LOGE("malloc pcm_buf error");
         free(ctx);
@@ -46,14 +46,14 @@ void aac_dec_decode(aac_dec_ctx* ctx, uint8_t* buf, uint buf_size) {
     UCHAR* input_buf[] = { buf };
     UINT valid_size = buf_size;
 
-    memset(ctx->pcm_buf, 0, PCM_BUF_SIZE);
+    memset(ctx->pcm_buf, 0, sizeof(INT_PCM) * PCM_SIZE);
 
     if (AAC_DEC_OK != aacDecoder_Fill(ctx->handle, input_buf, &buf_size, &valid_size)) {
         LOGE("aacDecoder_Fill error");
         return;
     }
 
-    if (AAC_DEC_OK != aacDecoder_DecodeFrame(ctx->handle, ctx->pcm_buf, PCM_BUF_SIZE, 0)) {
+    if (AAC_DEC_OK != aacDecoder_DecodeFrame(ctx->handle, ctx->pcm_buf, PCM_SIZE, 0)) {
         LOGE("aacDecoder_DecodeFrame error");
         return;
     }
