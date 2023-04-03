@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, AirPlayConsume
         surfaceView.holder.addCallback(this)
 
         infoView = findViewById(R.id.infoView)
-        infoView.text = "设备 [${Build.MODEL}] 等待连接"
+        infoView.text = "Device [${Build.MODEL}] waiting for connect"
 
         videoPlayer = VideoPlayer(surfaceView)
         audioPlayer = AudioPlayer()
